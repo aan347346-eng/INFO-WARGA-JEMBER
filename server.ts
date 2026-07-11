@@ -2,6 +2,8 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { Article, Comment, WebSettings, VisitorStats, AdminUser } from "./src/types";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc, setDoc, terminate } from "firebase/firestore";
 
 // Check if running on Vercel to use the writable /tmp/db.json database path
 const IS_VERCEL = typeof process.env.VERCEL !== "undefined";
@@ -9,8 +11,66 @@ const DB_PATH = IS_VERCEL
   ? path.join("/tmp", "db.json") 
   : path.join(process.cwd(), "db.json");
 
-// Helper to read and write database
-function readDB() {
+// Firebase client initialization for server-side persistence
+let firebaseConfig: any = null;
+try {
+  const configPath = path.join(process.cwd(), "firebase-applet-config.json");
+  if (fs.existsSync(configPath)) {
+    firebaseConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+  }
+} catch (e) {
+  console.error("Failed to read firebase-applet-config.json:", e);
+}
+
+if (!firebaseConfig) {
+  firebaseConfig = {};
+}
+
+// Fallback to environment variables (useful for Vercel deployment without committing secrets)
+firebaseConfig.apiKey = process.env.FIREBASE_API_KEY || firebaseConfig.apiKey || process.env.VITE_FIREBASE_API_KEY;
+firebaseConfig.authDomain = process.env.FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain || process.env.VITE_FIREBASE_AUTH_DOMAIN;
+firebaseConfig.projectId = process.env.FIREBASE_PROJECT_ID || firebaseConfig.projectId || process.env.VITE_FIREBASE_PROJECT_ID;
+firebaseConfig.storageBucket = process.env.FIREBASE_STORAGE_BUCKET || firebaseConfig.storageBucket || process.env.VITE_FIREBASE_STORAGE_BUCKET;
+firebaseConfig.messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID || firebaseConfig.messagingSenderId || process.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
+firebaseConfig.appId = process.env.FIREBASE_APP_ID || firebaseConfig.appId || process.env.VITE_FIREBASE_APP_ID;
+
+let dbFirestore: any = null;
+let useFirestore = false;
+
+if (firebaseConfig && firebaseConfig.apiKey) {
+  try {
+    const app = initializeApp(firebaseConfig);
+    dbFirestore = getFirestore(app);
+    useFirestore = true;
+    console.log("🔥 Firebase initialized successfully on server. Firestore is active.");
+  } catch (e) {
+    console.error("⚠️ Failed to initialize Firebase on server:", e);
+  }
+}
+
+// Helper to disable Firestore gracefully when permissions or API are not set up
+async function disableFirestore(reason: string) {
+  if (!useFirestore) return;
+  useFirestore = false;
+  console.warn(`⚠️ [Firestore Disabled] ${reason}`);
+  console.warn("Falling back to local db.json file database. App remains 100% functional!");
+  if (dbFirestore) {
+    try {
+      await terminate(dbFirestore);
+      console.log("🔌 Firestore instance terminated successfully.");
+    } catch (err) {
+      console.error("Failed to terminate Firestore instance:", err);
+    }
+  }
+}
+
+// Memory Cache & Tracking State
+let dbCache: any = null;
+let lastSavedData: any = {};
+let lastFetchTime = 0;
+let isFetching = false;
+
+function readLocalDB() {
   if (IS_VERCEL && !fs.existsSync(DB_PATH)) {
     try {
       const originalPath = path.join(process.cwd(), "db.json");
@@ -259,11 +319,128 @@ function readDB() {
   }
 }
 
+// Background sync from Firestore to update memory cache
+async function syncFromFirestore() {
+  if (!useFirestore || !dbFirestore || isFetching) return;
+  isFetching = true;
+  try {
+    const docKeys = ["settings", "admins", "stats", "articles", "comments", "notifications"];
+    const promises = docKeys.map(key => getDoc(doc(dbFirestore, "jember_news", key)));
+    const snapshots = await Promise.all(promises);
+    
+    const newDb: any = {};
+    let hasUpdated = false;
+
+    snapshots.forEach((snap, idx) => {
+      const key = docKeys[idx];
+      if (snap.exists()) {
+        let value: any;
+        const data = snap.data();
+        if (data && "list" in data) {
+          value = data.list;
+        } else {
+          value = data;
+        }
+        newDb[key] = value;
+        hasUpdated = true;
+      }
+    });
+
+    if (hasUpdated) {
+      dbCache = { ...dbCache, ...newDb };
+      lastSavedData = JSON.parse(JSON.stringify(dbCache));
+      
+      // Keep local db.json updated as backup
+      try {
+        fs.writeFileSync(DB_PATH, JSON.stringify(dbCache, null, 2));
+      } catch (err) {
+        console.error("Error writing db.json backup:", err);
+      }
+    }
+    lastFetchTime = Date.now();
+  } catch (e: any) {
+    console.error("Error syncing from Firestore:", e);
+    const errMsg = String(e);
+    if (e?.code === "permission-denied" || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("not been used in project") || errMsg.includes("disabled") || errMsg.includes("offline")) {
+      disableFirestore(`Firestore connection issue: ${errMsg}`);
+    }
+  } finally {
+    isFetching = false;
+  }
+}
+
+// Non-blocking write to Firestore of only modified fields
+async function saveToFirestore(newData: any) {
+  if (!useFirestore || !dbFirestore) return;
+  try {
+    const docKeys = ["settings", "admins", "stats", "articles", "comments", "notifications"];
+    const promises: Promise<void>[] = [];
+
+    for (const key of docKeys) {
+      const newVal = newData[key];
+      const oldVal = lastSavedData[key];
+      
+      // Only write if something changed
+      if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+        const docRef = doc(dbFirestore, "jember_news", key);
+        let payload: any = {};
+        if (Array.isArray(newVal)) {
+          payload = { list: newVal };
+        } else {
+          payload = { ...newVal };
+        }
+        promises.push(setDoc(docRef, payload));
+      }
+    }
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+      lastSavedData = JSON.parse(JSON.stringify(newData));
+      console.log(`Saved ${promises.length} changed collections to Firestore successfully`);
+    }
+  } catch (e: any) {
+    console.error("Error saving to Firestore:", e);
+    const errMsg = String(e);
+    if (e?.code === "permission-denied" || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("not been used in project") || errMsg.includes("disabled") || errMsg.includes("offline")) {
+      disableFirestore(`Firestore write issue: ${errMsg}`);
+    }
+  }
+}
+
+// Unified API for reading database synchronously with hybrid cache
+function readDB() {
+  if (!dbCache) {
+    dbCache = readLocalDB();
+    lastSavedData = JSON.parse(JSON.stringify(dbCache));
+    
+    // Initial async pull from Firestore
+    if (useFirestore) {
+      syncFromFirestore().then(() => {
+        console.log("Initial Firestore cache sync complete");
+      });
+    }
+  } else {
+    // Periodic background fetch
+    if (useFirestore && Date.now() - lastFetchTime > 15000) {
+      syncFromFirestore();
+    }
+  }
+
+  return dbCache;
+}
+
+// Unified API for writing database
 function writeDB(data: any) {
+  dbCache = data;
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
   } catch (error) {
-    console.error("Error writing to database file", error);
+    console.error("Error writing to local database file", error);
+  }
+
+  // Non-blocking async write to Firestore
+  if (useFirestore) {
+    saveToFirestore(data);
   }
 }
 
