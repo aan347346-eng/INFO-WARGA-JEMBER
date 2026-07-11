@@ -1,17 +1,28 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { Article, Comment, WebSettings, VisitorStats, AdminUser } from "./src/types.js";
 
-const _filename = typeof import.meta !== "undefined" && import.meta.url ? fileURLToPath(import.meta.url) : "";
-const _dirname = _filename ? path.dirname(_filename) : "";
-
-const DB_PATH = path.join(process.cwd(), "db.json");
+// Check if running on Vercel to use the writable /tmp/db.json database path
+const IS_VERCEL = typeof process.env.VERCEL !== "undefined";
+const DB_PATH = IS_VERCEL 
+  ? path.join("/tmp", "db.json") 
+  : path.join(process.cwd(), "db.json");
 
 // Helper to read and write database
 function readDB() {
+  if (IS_VERCEL && !fs.existsSync(DB_PATH)) {
+    try {
+      const originalPath = path.join(process.cwd(), "db.json");
+      if (fs.existsSync(originalPath)) {
+        fs.copyFileSync(originalPath, DB_PATH);
+      }
+    } catch (e) {
+      console.error("Error copying db.json to /tmp on Vercel:", e);
+    }
+  }
+
   if (!fs.existsSync(DB_PATH)) {
     // Initial Seed Data
     const seedData = {
@@ -196,14 +207,13 @@ function writeDB(data: any) {
 }
 
 // Start Server Setup
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+const app = express();
+const PORT = 3000;
 
-  app.use(express.json());
+app.use(express.json());
 
-  // Initialize DB
-  readDB();
+// Initialize DB
+readDB();
 
   // Helper middleware for auth checks
   function getAuthenticatedUser(req: express.Request) {
@@ -720,7 +730,8 @@ async function startServer() {
     });
   });
 
-  // Setup Vite middleware for development or Static serve for production
+// Setup Vite middleware for development or Static serve for production
+async function setupViteOrStatic() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -734,10 +745,15 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
+}
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
+// Only start the HTTP listener if NOT running in a serverless environment (like Vercel)
+if (typeof process.env.VERCEL === "undefined") {
+  setupViteOrStatic().then(() => {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   });
 }
 
-startServer();
+export default app;
