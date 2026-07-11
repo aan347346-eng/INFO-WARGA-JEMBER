@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { Article, Comment, WebSettings, VisitorStats, AdminUser } from "./src/types.js";
+import { Article, Comment, WebSettings, VisitorStats, AdminUser } from "./src/types";
 
 // Check if running on Vercel to use the writable /tmp/db.json database path
 const IS_VERCEL = typeof process.env.VERCEL !== "undefined";
@@ -190,10 +190,72 @@ function readDB() {
 
   try {
     const raw = fs.readFileSync(DB_PATH, "utf-8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    
+    // Ensure all required arrays and objects exist to avoid crashes
+    if (!Array.isArray(parsed.admins)) parsed.admins = [];
+    if (!Array.isArray(parsed.articles)) parsed.articles = [];
+    if (!Array.isArray(parsed.comments)) parsed.comments = [];
+    if (!Array.isArray(parsed.notifications)) parsed.notifications = [];
+    if (!parsed.stats) {
+      parsed.stats = {
+        totalVisits: 0,
+        totalPageviews: 0,
+        dailyStats: [],
+        categoryViews: {},
+        browserStats: {}
+      };
+    }
+    if (!parsed.settings) {
+      parsed.settings = {
+        websiteTitle: "INFO WARGA JEMBER",
+        address: "Jl. Bengawan Solo No. 12, Sumbersari, Jember, Jawa Timur 68121",
+        email: "info@infowargajember.com",
+        runningText: ""
+      };
+    }
+    
+    return parsed;
   } catch (error) {
     console.error("Error reading database file, returning default schema", error);
-    return {};
+    return {
+      settings: {
+        websiteTitle: "INFO WARGA JEMBER",
+        address: "Jl. Bengawan Solo No. 12, Sumbersari, Jember, Jawa Timur 68121",
+        email: "info@infowargajember.com",
+        youtube: "https://youtube.com/c/InfoWargaJember",
+        whatsappAdmin: "081234567890",
+        facebook: "https://facebook.com/infowargajember",
+        instagram: "https://instagram.com/infowargajember",
+        runningText: "BREAKING NEWS: Pemerintah Kabupaten Jember Membuka Pendaftaran Beasiswa Mahasiswa Prestasi 2026 • Car Free Day Alun-Alun Jember Hadir Kembali Akhir Pekan Ini Mulai Pukul 06.00 WIB • Sukseskan Pilkada Jember Damai 2026 • Festival Budaya Pegon Watu Lo Sukses Menarik Ribuan Wisatawan Domestik!"
+      },
+      admins: [
+        {
+          email: "aan347346@gmail.com",
+          name: "Superadmin Jember 1",
+          role: "superadmin",
+          addedBy: "System",
+          addedAt: new Date().toISOString()
+        },
+        {
+          email: "aann37501@gmail.com",
+          name: "Superadmin Jember 2",
+          role: "superadmin",
+          addedBy: "System",
+          addedAt: new Date().toISOString()
+        }
+      ],
+      articles: [],
+      comments: [],
+      stats: {
+        totalVisits: 0,
+        totalPageviews: 0,
+        dailyStats: [],
+        categoryViews: {},
+        browserStats: {}
+      },
+      notifications: []
+    };
   }
 }
 
