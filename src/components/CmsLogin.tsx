@@ -150,14 +150,31 @@ export default function CmsLogin({ onLoginSuccess, onNavigateHome }: CmsLoginPro
           {/* Fast Demo Mode - Essential for AI Studio Preview without Google Console setups */}
           <div className="flex flex-col gap-2">
             <button
-              onClick={() => handleDemoLogin("aann37501@gmail.com", "Superadmin Jember")}
+              onClick={() => handleDemoLogin("aan347346@gmail.com", "Superadmin Jember 1")}
               disabled={loading}
               className="w-full flex items-center justify-between px-4 py-3 bg-vibrant-light/40 hover:bg-vibrant-light/70 border border-vibrant-border rounded-xl text-xs font-bold text-vibrant-secondary transition-colors disabled:opacity-50 cursor-pointer text-left"
             >
               <div className="flex flex-col">
                 <span className="font-extrabold flex items-center gap-1.5 text-vibrant-dark">
                   <span className="w-2 h-2 rounded-full bg-vibrant-primary animate-pulse"></span>
-                  Superadmin Jember
+                  Superadmin Jember 1
+                </span>
+                <span className="text-[10px] text-vibrant-accent font-normal">
+                  Email: aan347346@gmail.com (Akses penuh)
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-vibrant-primary shrink-0" />
+            </button>
+
+            <button
+              onClick={() => handleDemoLogin("aann37501@gmail.com", "Superadmin Jember 2")}
+              disabled={loading}
+              className="w-full flex items-center justify-between px-4 py-3 bg-vibrant-light/20 hover:bg-vibrant-light/40 border border-vibrant-border/50 rounded-xl text-xs font-bold text-vibrant-secondary transition-colors disabled:opacity-50 cursor-pointer text-left"
+            >
+              <div className="flex flex-col">
+                <span className="font-extrabold flex items-center gap-1.5 text-vibrant-dark">
+                  <span className="w-2 h-2 rounded-full bg-vibrant-primary"></span>
+                  Superadmin Jember 2
                 </span>
                 <span className="text-[10px] text-vibrant-accent font-normal">
                   Email: aann37501@gmail.com (Akses penuh)

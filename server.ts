@@ -27,8 +27,15 @@ function readDB() {
       } as WebSettings,
       admins: [
         {
+          email: "aan347346@gmail.com",
+          name: "Superadmin Jember 1",
+          role: "superadmin",
+          addedBy: "System",
+          addedAt: new Date().toISOString()
+        },
+        {
           email: "aann37501@gmail.com",
-          name: "Superadmin Jember",
+          name: "Superadmin Jember 2",
           role: "superadmin",
           addedBy: "System",
           addedAt: new Date().toISOString()
@@ -261,7 +268,7 @@ async function startServer() {
 
     // Determine access role
     let role: "superadmin" | "admin" | "reader" = "reader";
-    if (email === "aann37501@gmail.com") {
+    if (email === "aann37501@gmail.com" || email === "aan347346@gmail.com") {
       role = "superadmin";
     } else if (admin) {
       role = admin.role;
@@ -340,6 +347,31 @@ async function startServer() {
     res.json(db.settings);
   });
 
+  // Backup & Restore Database to/from Google Drive
+  app.get("/api/backup/export", (req, res) => {
+    const user = getAuthenticatedUser(req);
+    if (!user || user.role !== "superadmin") {
+      return res.status(403).json({ message: "Only superadmin can export database" });
+    }
+    const db = readDB();
+    res.json(db);
+  });
+
+  app.post("/api/backup/restore", (req, res) => {
+    const user = getAuthenticatedUser(req);
+    if (!user || user.role !== "superadmin") {
+      return res.status(403).json({ message: "Only superadmin can restore database" });
+    }
+
+    const backupData = req.body;
+    if (!backupData || !backupData.articles || !backupData.admins || !backupData.settings) {
+      return res.status(400).json({ message: "Invalid backup data schema. Must contain articles, admins and settings." });
+    }
+
+    writeDB(backupData);
+    res.json({ success: true, message: "Database successfully restored from backup" });
+  });
+
   // Articles Routing
   app.get("/api/articles", (req, res) => {
     const db = readDB();
@@ -348,7 +380,7 @@ async function startServer() {
     let filtered = db.articles;
 
     // Filter by status (public can only see "publish" status)
-    if (status) {
+    if (status && status !== "all") {
       filtered = filtered.filter((a: Article) => a.status === status);
     } else {
       // By default, if request is from non-admin or no status filter, only return publish

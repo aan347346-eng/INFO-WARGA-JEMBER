@@ -1,0 +1,187 @@
+{
+  "settings": {
+    "websiteTitle": "INFO WARGA JEMBER",
+    "address": "Jl. Bengawan Solo No. 12, Sumbersari, Jember, Jawa Timur 68121",
+    "email": "info@infowargajember.com",
+    "youtube": "https://youtube.com/c/InfoWargaJember",
+    "whatsappAdmin": "081234567890",
+    "facebook": "https://facebook.com/infowargajember",
+    "instagram": "https://instagram.com/infowargajember",
+    "runningText": "BREAKING NEWS: Pemerintah Kabupaten Jember Membuka Pendaftaran Beasiswa Mahasiswa Prestasi 2026 • Car Free Day Alun-Alun Jember Hadir Kembali Akhir Pekan Ini Mulai Pukul 06.00 WIB • Sukseskan Pilkada Jember Damai 2026 • Festival Budaya Pegon Watu Lo Sukses Menarik Ribuan Wisatawan Domestik!"
+  },
+  "admins": [
+    {
+      "email": "aan347346@gmail.com",
+      "name": "Superadmin Jember 1",
+      "role": "superadmin",
+      "addedBy": "System",
+      "addedAt": "2026-07-11T06:18:13.013Z"
+    },
+    {
+      "email": "aann37501@gmail.com",
+      "name": "Superadmin Jember 2",
+      "role": "superadmin",
+      "addedBy": "System",
+      "addedAt": "2026-07-11T06:18:13.013Z"
+    }
+  ],
+  "articles": [
+    {
+      "id": "art-1",
+      "title": "Pemkab Jember Resmi Buka Beasiswa Mahasiswa Berprestasi Tahun 2026",
+      "content": "<p>Pemerintah Kabupaten Jember resmi meluncurkan program Beasiswa Mahasiswa Berprestasi Tahun Anggaran 2026. Program tahunan ini bertujuan untuk membantu putra-putri daerah Jember yang sedang menempuh pendidikan tinggi, baik di dalam maupun di luar Kabupaten Jember.</p><p>Bupati Jember menjelaskan bahwa beasiswa tahun ini difokuskan pada kategori mahasiswa kurang mampu, prestasi akademik, prestasi non-akademik (seperti olahraga dan seni), serta mahasiswa keagamaan (hafidz/hafidzah).</p><p>\"Kami berkomitmen penuh untuk memajukan kualitas sumber daya manusia di Kabupaten Jember. Pendidikan adalah investasi jangka panjang terbaik kita,\" ujar Bupati Jember saat konferensi pers di Pendopo Wahyawibawagraha.</p><p>Pendaftaran dibuka secara daring mulai tanggal 15 Juli 2026 hingga 15 Agustus 2026. Persyaratan lengkap dapat diakses melalui portal resmi Dinas Pendidikan Kabupaten Jember.</p>",
+      "excerpt": "Kabar gembira untuk mahasiswa asal Jember. Pemkab Jember resmi membuka beasiswa prestasi tahun 2026 untuk berbagai kategori pendaftaran.",
+      "category": "pemerintahan",
+      "kecamatan": "Kaliwates",
+      "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60",
+      "status": "publish",
+      "views": 342,
+      "authorName": "Superadmin Jember",
+      "authorEmail": "aann37501@gmail.com",
+      "createdAt": "2026-07-10T06:18:13.014Z",
+      "updatedAt": "2026-07-10T06:18:13.014Z"
+    },
+    {
+      "id": "art-2",
+      "title": "Festival Pegon Watu Ulo Ambulu Sedot Perhatian Ribuan Wisatawan",
+      "content": "<p>Ribuan warga dan wisatawan dari berbagai daerah memadati kawasan Pantai Watu Ulo di Kecamatan Ambulu, Kabupaten Jember, untuk menyaksikan perhelatan tahunan Festival Pegon. Tradisi ini merupakan perayaan masyarakat pesisir selatan Jember sebagai ungkapan syukur sekaligus atraksi wisata budaya yang memikat.</p><p>Festival ini menampilkan belasan pegon (gerobak sapi tradisional Jawa) yang dihias dengan aneka janur, hasil bumi, dan hiasan khas. Para pemilik pegon mengenakan pakaian adat Jawa-Madura (Pandalungan) seraya mengarak pegon menyusuri pantai.</p><p>Plt Kepala Dinas Pariwisata Jember menyatakan bahwa pariwisata berbasis budaya di Jember selatan seperti Festival Pegon akan terus didorong masuk dalam kalender event nasional karena keunikan budaya lokalnya.</p><p>Selain pawai pegon, pengunjung juga disuguhi pertunjukan seni tradisional reog, tari daerah, dan sajian kuliner khas ikan bakar pesisir Ambulu.</p>",
+      "excerpt": "Kemeriahan tradisi budaya pesisir selatan Jember kembali hadir. Festival Pegon Watu Ulo sukses menarik kedatangan ribuan wisatawan lokal maupun mancanegara.",
+      "category": "wisata-kuliner",
+      "kecamatan": "Ambulu",
+      "image": "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&auto=format&fit=crop&q=60",
+      "status": "publish",
+      "views": 489,
+      "authorName": "Superadmin Jember",
+      "authorEmail": "aann37501@gmail.com",
+      "createdAt": "2026-07-10T18:18:13.014Z",
+      "updatedAt": "2026-07-10T18:18:13.014Z"
+    },
+    {
+      "id": "art-3",
+      "title": "Lalin Gunung Gumitir Silo Sempat Macet Total Akibat Truk Mogok di Tikungan Mbah Lanang",
+      "content": "<p>Jalur utama Jember-Banyuwangi melalui Gunung Gumitir, Kecamatan Silo, sempat mengalami kemacetan lalu lintas total pada Jumat dini hari akibat sebuah truk tronton bermuatan semen mengalami kerusakan mesin tepat di tikungan tajam legendaris Mbah Lanang.</p><p>Truk bernomor polisi P 9823 UY tersebut mogok dalam posisi melintang yang menutup hampir seluruh badan jalan raya nasional tersebut.</p><p>Aparat Polsek Silo bersama relawan Gumitir segera diterjunkan ke lokasi untuk melakukan rekayasa lalu lintas dengan sistem buka-tutup satu arah secara bergantian guna mengurai kemacetan kendaraan yang sempat mengekor hingga beberapa kilometer di kedua arah.</p><p>\"Proses evakuasi truk memakan waktu sekitar tiga jam karena membutuhkan kendaraan derek khusus dari Jember kota,\" tutur Kanit Lantas Polsek Silo.</p><p>Lalu lintas baru kembali normal sepenuhnya menjelang pukul 08.00 WIB setelah truk berhasil dievakuasi ke bahu jalan yang lebih aman.</p>",
+      "excerpt": "Kemacetan parah melanda jalur Gumitir Silo akibat truk tronton mogok tepat di tikungan tajam. Polisi terapkan sistem buka-tutup lalu lintas.",
+      "category": "peristiwa",
+      "kecamatan": "Silo",
+      "image": "https://images.unsplash.com/photo-1519074002996-a69e7ac46a42?w=800&auto=format&fit=crop&q=60",
+      "status": "publish",
+      "views": 651,
+      "authorName": "Ahmad S.",
+      "authorEmail": "ahmads@infowargajember.com",
+      "createdAt": "2026-07-11T03:18:13.014Z",
+      "updatedAt": "2026-07-11T03:18:13.014Z"
+    },
+    {
+      "id": "art-4",
+      "title": "Persid Jember Targetkan Juara Grup di Liga 3 Jawa Timur Musim Ini",
+      "content": "<p>Manajemen Persid Jember (Persatuan Sepakbola Indonesia Djember) menaruh optimisme tinggi menjelang bergulirnya kompetisi kasta ketiga sepak bola nasional wilayah Jawa Timur musim ini. Klub berjuluk Macan Raung tersebut menargetkan lolos fase grup dengan menyapu bersih poin penuh pada laga-laga kandang.</p><p>Pelatih kepala Persid mengutarakan bahwa persiapan fisik dan taktikal skuad asuhannya sudah berjalan intensif selama dua bulan terakhir di Stadion Jember Sport Garden (JSG), Ajung.</p><p>\"Kami memiliki komposisi tim yang solid, perpaduan pemain senior berpengalaman dan talenta muda berbakat asli Jember. Dukungan fanatik suporter Berni (Jember Mania) di stadion akan menjadi motivasi ekstra bagi kami,\" ujarnya.</p><p>Laga perdana Persid dijadwalkan menjamu Persipro Probolinggo di JSG pada akhir pekan mendatang.</p>",
+      "excerpt": "Optimisme tinggi membayangi Persid Jember jelang gelaran Liga 3 Jatim. Manajemen targetkan Macan Raung menyapu bersih laga kandang.",
+      "category": "olahraga",
+      "kecamatan": "Ajung",
+      "image": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=60",
+      "status": "publish",
+      "views": 215,
+      "authorName": "Berni Jember",
+      "authorEmail": "berni@infowargajember.com",
+      "createdAt": "2026-07-10T12:18:13.014Z",
+      "updatedAt": "2026-07-10T12:18:13.014Z"
+    },
+    {
+      "id": "art-5",
+      "title": "Mencicipi Kelezatan Gudeg Jember yang Khas dan Manis Gurih di Sumbersari",
+      "content": "<p>Bagi para pencinta wisata kuliner yang sedang berkunjung ke Jember, rasanya belum lengkap bila belum mencicipi hidangan legendaris Gudeg Jember yang berlokasi di kawasan kampus Sumbersari.</p><p>Berbeda dengan gudeg Yogyakarta yang cenderung sangat manis, Gudeg Jember menyajikan sensasi rasa yang lebih gurih-manis yang disesuaikan dengan selera lidah masyarakat Jember Timur. Seporsi gudeg di sini disajikan lengkap dengan nasi hangat, sayur nangka (krecek pedas), suwiran ayam kampung, telur bacem, dan sambal khas Jember yang menggugah selera.</p><p>\"Warung kami sudah berdiri sejak tahun 1995. Rahasia kelezatan kami terletak pada bumbu tradisional yang dimasak perlahan di atas tungku arang kayu,\" ujar pemilik warung legendaris tersebut.</p><p>Warung gudeg ini buka setiap hari dari pukul 06.00 hingga 14.00 WIB dan selalu ramai dipadati oleh kalangan mahasiswa maupun pegawai perkantoran setempat.</p>",
+      "excerpt": "Gudeg Jember menyajikan cita rasa gurih manis pandalungan yang istimewa. Cocok untuk sarapan pagi maupun makan siang para pemburu kuliner.",
+      "category": "wisata-kuliner",
+      "kecamatan": "Sumbersari",
+      "image": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=60",
+      "status": "publish",
+      "views": 512,
+      "authorName": "Rudi Hartono",
+      "authorEmail": "rudi@infowargajember.com",
+      "createdAt": "2026-07-09T06:18:13.014Z",
+      "updatedAt": "2026-07-09T06:18:13.014Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "com-1",
+      "articleId": "art-1",
+      "articleTitle": "Pemkab Jember Resmi Buka Beasiswa Mahasiswa Berprestasi Tahun 2026",
+      "authorName": "Indra Lesmana",
+      "authorEmail": "indralesmana@gmail.com",
+      "content": "Sangat bersyukur dengan adanya beasiswa ini. Semoga pendaftarannya lancar dan transparan sehingga menjangkau adik-adik mahasiswa Jember yang benar-benar membutuhkan.",
+      "createdAt": "2026-07-10T10:18:13.014Z"
+    },
+    {
+      "id": "com-2",
+      "articleId": "art-3",
+      "articleTitle": "Lalin Gunung Gumitir Silo Sempat Macet Total Akibat Truk Mogok di Tikungan Mbah Lanang",
+      "authorName": "Siti Masitoh",
+      "authorEmail": "sitimasitoh@yahoo.com",
+      "content": "Waduh, untung tadi pagi ga lewat Gumitir. Jalur ini emang rawan mogok terutama di tikungan tajam, semoga ke depan ada pelebaran jalan di titik-titik rawan.",
+      "createdAt": "2026-07-11T04:18:13.014Z"
+    }
+  ],
+  "stats": {
+    "totalVisits": 1420,
+    "totalPageviews": 3102,
+    "dailyStats": [
+      {
+        "date": "2026-07-04",
+        "visits": 180,
+        "pageviews": 380
+      },
+      {
+        "date": "2026-07-05",
+        "visits": 210,
+        "pageviews": 450
+      },
+      {
+        "date": "2026-07-06",
+        "visits": 190,
+        "pageviews": 410
+      },
+      {
+        "date": "2026-07-07",
+        "visits": 230,
+        "pageviews": 520
+      },
+      {
+        "date": "2026-07-08",
+        "visits": 260,
+        "pageviews": 590
+      },
+      {
+        "date": "2026-07-09",
+        "visits": 200,
+        "pageviews": 452
+      },
+      {
+        "date": "2026-07-10",
+        "visits": 150,
+        "pageviews": 300
+      }
+    ],
+    "categoryViews": {
+      "pemerintahan": 512,
+      "wisata-kuliner": 1210,
+      "peristiwa": 890,
+      "olahraga": 490
+    },
+    "browserStats": {
+      "Chrome": 1890,
+      "Safari": 640,
+      "Firefox": 250,
+      "Mobile Chrome": 210,
+      "Others": 112
+    }
+  },
+  "notifications": [
+    {
+      "id": "notif-1",
+      "message": "Artikel baru 'Lalin Gunung Gumitir...' sedang menunggu persetujuan review.",
+      "createdAt": "2026-07-11T06:18:13.014Z",
+      "read": false
+    }
+  ]
+}

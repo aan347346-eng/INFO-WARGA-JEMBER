@@ -6,9 +6,10 @@ import {
 import { 
   LayoutDashboard, FileText, UserCheck, Settings, PenTool, Trash2, 
   Eye, Check, ShieldAlert, Plus, X, Globe, Save, AlertTriangle, 
-  MapPin, Bell, MessageSquare, ExternalLink, HelpCircle 
+  MapPin, Bell, MessageSquare, ExternalLink, HelpCircle, HardDrive 
 } from "lucide-react";
 import { Article, Comment, WebSettings, AdminUser, DashboardData, CATEGORIES, KECAMATAN_LIST } from "../types";
+import GoogleDriveTab from "./GoogleDriveTab";
 
 interface CmsDashboardProps {
   user: any;
@@ -20,6 +21,49 @@ interface CmsDashboardProps {
 
 const COLORS = ["#C2185B", "#AD1457", "#F06292", "#D81B60", "#F48FB1", "#880E4F"];
 
+// Helper function to play an elegant double-tone chime sound programmatically using the Web Audio API
+const playNotificationSound = () => {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    
+    const audioContext = new AudioContextClass();
+    
+    // First tone (C5)
+    const osc1 = audioContext.createOscillator();
+    const gainNode1 = audioContext.createGain();
+    osc1.connect(gainNode1);
+    gainNode1.connect(audioContext.destination);
+    
+    osc1.type = "sine";
+    const now = audioContext.currentTime;
+    
+    osc1.frequency.setValueAtTime(523.25, now); // C5
+    gainNode1.gain.setValueAtTime(0.12, now);
+    gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    
+    osc1.start(now);
+    osc1.stop(now + 0.45);
+    
+    // Second tone (E5, perfect chime interval)
+    const osc2 = audioContext.createOscillator();
+    const gainNode2 = audioContext.createGain();
+    osc2.connect(gainNode2);
+    gainNode2.connect(audioContext.destination);
+    
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(659.25, now + 0.12); // E5
+    gainNode2.gain.setValueAtTime(0, now);
+    gainNode2.gain.setValueAtTime(0.12, now + 0.12);
+    gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+    
+    osc2.start(now + 0.12);
+    osc2.stop(now + 0.6);
+  } catch (err) {
+    console.warn("Could not play notification sound:", err);
+  }
+};
+
 export default function CmsDashboard({
   user,
   onLogout,
@@ -27,7 +71,7 @@ export default function CmsDashboard({
   webSettings,
   onUpdateSettings,
 }: CmsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "articles" | "write" | "admins" | "settings" | "comments">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "articles" | "write" | "admins" | "settings" | "comments" | "drive">("dashboard");
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
@@ -82,6 +126,10 @@ export default function CmsDashboard({
       });
       if (notifRes.ok) {
         const notifData = await notifRes.json();
+        // Play notification chime on initial dashboard load if there are pending notifications
+        if (notifData.length > 0 && notifications.length === 0) {
+          playNotificationSound();
+        }
         setNotifications(notifData);
       }
     } catch (e) {
@@ -133,6 +181,36 @@ export default function CmsDashboard({
     fetchArticles();
     fetchAdmins();
   }, [activeTab]);
+
+  // Background polling (every 15 seconds) to fetch review notifications for real-time sound updates
+  useEffect(() => {
+    if (user.role !== "superadmin") return;
+
+    const intervalId = setInterval(async () => {
+      try {
+        const notifRes = await fetch("/api/notifications", {
+          headers: { "Authorization": `Bearer ${localStorage.getItem("cms_token")}` }
+        });
+        if (notifRes.ok) {
+          const notifData = await notifRes.json();
+          if (notifData.length > 0) {
+            // Check if there are any brand new notification IDs that we don't have in state
+            const hasNewNotif = notifData.some((newN: any) => 
+              !notifications.some((oldN: any) => oldN.id === newN.id)
+            );
+            if (hasNewNotif) {
+              playNotificationSound();
+            }
+          }
+          setNotifications(notifData);
+        }
+      } catch (err) {
+        console.error("Error background polling notifications:", err);
+      }
+    }, 15000); // 15 seconds
+
+    return () => clearInterval(intervalId);
+  }, [notifications, user.role]);
 
   // Handle setting tabs or editing
   const handleEditArticle = (art: Article) => {
@@ -262,7 +340,7 @@ export default function CmsDashboard({
   };
 
   const handleDeleteAdmin = async (email: string) => {
-    if (email === "aann37501@gmail.com") {
+    if (email === "aann37501@gmail.com" || email === "aan347346@gmail.com") {
       alert("Akun Superadmin Utama tidak dapat dihapus!");
       return;
     }
@@ -337,10 +415,40 @@ export default function CmsDashboard({
   // Helper parsing image URL
   const parseImage = (url: string) => {
     if (!url) return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=128";
-    const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([^/?#]+)/) || url.match(/id=([^&]+)/);
-    if (match && match[1]) {
-      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    
+    // Support various formats of Google Drive links
+    const driveRegexes = [
+      /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+      /docs\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/uc\?.*?id=([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/thumbnail\?.*?id=([a-zA-Z0-9_-]+)/,
+      /lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/,
+      /lh3\.googleusercontent\.com\/u\/\d+\/d\/([a-zA-Z0-9_-]+)/
+    ];
+
+    let fileId = "";
+    for (const regex of driveRegexes) {
+      const match = url.match(regex);
+      if (match && match[1]) {
+        fileId = match[1];
+        break;
+      }
     }
+
+    // If still not matched, check if there's any parameter with 'id=' that looks like a Google Drive ID (usually 25-45 characters)
+    if (!fileId) {
+      const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]{25,45})/);
+      if (idMatch && idMatch[1]) {
+        fileId = idMatch[1];
+      }
+    }
+
+    if (fileId) {
+      // Use lh3.googleusercontent.com/d/FILE_ID which bypasses Google Drive's new cookie/iframe restrictions on embedded images
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+    
     return url;
   };
 
@@ -399,6 +507,16 @@ export default function CmsDashboard({
             Tulis Artikel Baru
           </button>
 
+          <button
+            onClick={() => setActiveTab("drive")}
+            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+              activeTab === "drive" ? "bg-vibrant-primary text-white" : "text-vibrant-light hover:bg-vibrant-secondary"
+            }`}
+          >
+            <HardDrive className="w-4 h-4" />
+            Google Drive Cloud
+          </button>
+
           {user.role === "superadmin" && (
             <>
               <button
@@ -455,7 +573,7 @@ export default function CmsDashboard({
         
         {/* NOTIFICATIONS BAR FOR SUPERADMIN */}
         {user.role === "superadmin" && notifications.length > 0 && (
-          <div className="mb-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm animate-pulse">
+          <div className="mb-6 bg-amber-50 border border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
             <div className="flex gap-2.5 items-start">
               <Bell className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
               <div className="flex flex-col text-xs text-amber-950 font-semibold">
@@ -465,9 +583,17 @@ export default function CmsDashboard({
             </div>
             <div className="flex items-center gap-2">
               <button 
-                onClick={() => {
+                onClick={async () => {
+                  // Find review article in the state
                   const targetArt = articles.find(a => a.status === "review");
-                  if (targetArt) handleEditArticle(targetArt);
+                  if (targetArt) {
+                    handleEditArticle(targetArt);
+                  } else {
+                    // Fallback to list of articles
+                    setActiveTab("articles");
+                  }
+                  // Clear the notifications so it disappears immediately from the server and client
+                  await handleClearNotifications();
                 }}
                 className="bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-black px-4 py-1.5 rounded-xl transition-all cursor-pointer shadow-sm"
               >
@@ -475,7 +601,7 @@ export default function CmsDashboard({
               </button>
               <button 
                 onClick={handleClearNotifications}
-                className="text-amber-700 hover:text-amber-900 text-xs font-bold"
+                className="text-amber-700 hover:text-amber-900 text-xs font-bold cursor-pointer"
               >
                 Bersihkan
               </button>
@@ -1051,7 +1177,7 @@ export default function CmsDashboard({
                             {new Date(adm.addedAt).toLocaleDateString("id-ID")}
                           </td>
                           <td className="py-3 text-right">
-                            {adm.email !== "aann37501@gmail.com" ? (
+                            {adm.email !== "aann37501@gmail.com" && adm.email !== "aan347346@gmail.com" ? (
                               <button
                                 onClick={() => handleDeleteAdmin(adm.email)}
                                 className="bg-red-50 hover:bg-red-100 text-red-600 p-1.5 rounded transition-all cursor-pointer"
@@ -1174,6 +1300,21 @@ export default function CmsDashboard({
               </button>
             </form>
           </div>
+        )}
+
+        {/* TAB 7: GOOGLE DRIVE CLOUD */}
+        {activeTab === "drive" && (
+          <GoogleDriveTab
+            user={user}
+            articles={articles}
+            onRefreshArticles={async () => {
+              await fetchArticles();
+              await fetchDashboardData();
+            }}
+            setActiveTab={setActiveTab}
+            setArticleForm={setArticleForm}
+            setEditingArticleId={setEditingArticleId}
+          />
         )}
 
       </main>

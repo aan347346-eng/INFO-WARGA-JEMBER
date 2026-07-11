@@ -90,10 +90,40 @@ export default function HomeView({
   // Convert Google Drive public link if any
   const parseImage = (url: string) => {
     if (!url) return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&auto=format&fit=crop&q=60";
-    const match = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([^/?#]+)/) || url.match(/id=([^&]+)/);
-    if (match && match[1]) {
-      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    
+    // Support various formats of Google Drive links
+    const driveRegexes = [
+      /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+      /docs\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/uc\?.*?id=([a-zA-Z0-9_-]+)/,
+      /drive\.google\.com\/thumbnail\?.*?id=([a-zA-Z0-9_-]+)/,
+      /lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/,
+      /lh3\.googleusercontent\.com\/u\/\d+\/d\/([a-zA-Z0-9_-]+)/
+    ];
+
+    let fileId = "";
+    for (const regex of driveRegexes) {
+      const match = url.match(regex);
+      if (match && match[1]) {
+        fileId = match[1];
+        break;
+      }
     }
+
+    // If still not matched, check if there's any parameter with 'id=' that looks like a Google Drive ID (usually 25-45 characters)
+    if (!fileId) {
+      const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]{25,45})/);
+      if (idMatch && idMatch[1]) {
+        fileId = idMatch[1];
+      }
+    }
+
+    if (fileId) {
+      // Use lh3.googleusercontent.com/d/FILE_ID which bypasses Google Drive's new cookie/iframe restrictions on embedded images
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+    
     return url;
   };
 
