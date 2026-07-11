@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @keyframes marquee {
-  0% { transform: translateX(50%); }
+  0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
@@ -14,7 +14,7 @@
   --color-vibrant-dark: #880E4F;
   --color-vibrant-pink-med: #F48FB1;
   --color-vibrant-dark-pink: #D81B60;
-  --animate-marquee: marquee 25s linear infinite;
+  --animate-marquee: marquee 60s linear infinite;
 }
 
 /* Custom scrollbar hiding helper */

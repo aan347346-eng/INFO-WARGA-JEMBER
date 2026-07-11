@@ -248,7 +248,7 @@ export default function Header({
               Breaking News
             </span>
             <div className="w-full overflow-hidden whitespace-nowrap">
-              <div className="inline-block animate-[marquee_25s_linear_infinite] hover:[animation-play-state:paused] text-white font-bold cursor-pointer">
+              <div className="inline-block animate-[marquee_60s_linear_infinite] hover:[animation-play-state:paused] text-white font-bold cursor-pointer">
                 {settings.runningText}
               </div>
             </div>

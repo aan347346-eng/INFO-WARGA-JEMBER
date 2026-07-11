@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import { createServer as createViteServer } from "vite";
 import { Article, Comment, WebSettings, VisitorStats, AdminUser } from "./src/types.js";
 
 // Check if running on Vercel to use the writable /tmp/db.json database path
@@ -733,6 +732,7 @@ readDB();
 // Setup Vite middleware for development or Static serve for production
 async function setupViteOrStatic() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
