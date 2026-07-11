@@ -1,0 +1,6 @@
+{
+  "name": "Info Warga Jember",
+  "description": "Portal berita lokal Kabupaten Jember menyajikan informasi terkini seputar pemerintahan, peristiwa, ekonomi, wisata, dan kuliner Jember.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

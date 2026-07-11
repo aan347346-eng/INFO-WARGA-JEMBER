@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@keyframes marquee {
+  0% { transform: translateX(50%); }
+  100% { transform: translateX(-100%); }
+}
+
+@theme {
+  --color-vibrant-primary: #C2185B;
+  --color-vibrant-secondary: #AD1457;
+  --color-vibrant-light: #FCE4EC;
+  --color-vibrant-border: #F8BBD0;
+  --color-vibrant-accent: #F06292;
+  --color-vibrant-dark: #880E4F;
+  --color-vibrant-pink-med: #F48FB1;
+  --color-vibrant-dark-pink: #D81B60;
+  --animate-marquee: marquee 25s linear infinite;
+}
+
+/* Custom scrollbar hiding helper */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
